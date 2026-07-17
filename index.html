@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Spam OTP Tools - Full Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            padding: 35px;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #ff4757);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 15px;
+        }
+
+        .subtitle span {
+            color: #ff6b6b;
+        }
+
+        .input-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .input-group input {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #ff6b6b;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.15);
+        }
+
+        .input-group input::placeholder {
+            color: #888;
+        }
+
+        .input-group button {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 120px;
+        }
+
+        .input-group button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .input-group button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-box {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            background: rgba(255,255,255,0.05);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .info-item strong {
+            color: #fff;
+        }
+
+        .info-item .highlight {
+            color: #ff6b6b;
+        }
+
+        /* Loader */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .loader.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader p {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* Result */
+        #result {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #result.show {
+            display: block;
+        }
+
+        .result-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .result-header .main-msg {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .result-header .main-msg.success {
+            color: #2ecc71;
+        }
+
+        .result-header .main-msg.error {
+            color: #ff6b6b;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+        }
+
+        .stats .stat-item {
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .stats .stat-success { color: #2ecc71; }
+        .stats .stat-failed { color: #ff6b6b; }
+        .stats .stat-error { color: #f39c12; }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .result-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .result-grid::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+
+        .result-grid::-webkit-scrollbar-thumb {
+            background: #ff6b6b;
+            border-radius: 10px;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 15px;
+            border-radius: 10px;
+            border-left: 3px solid #555;
+            transition: all 0.2s ease;
+        }
+
+        .result-card:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .result-card .name {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-card .status-badge {
+            font-size: 0.7rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .status-badge.success {
+            background: #2ecc71;
+            color: #000;
+        }
+
+        .status-badge.failed {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .status-badge.error {
+            background: #f39c12;
+            color: #000;
+        }
+
+        .result-card .detail {
+            font-size: 0.7rem;
+            color: #888;
+            word-break: break-all;
+        }
+
+        .result-card .detail.error-text {
+            color: #f39c12;
+        }
+
+        .result-card.border-success { border-left-color: #2ecc71; }
+        .result-card.border-failed { border-left-color: #ff6b6b; }
+        .result-card.border-error { border-left-color: #f39c12; }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: #555;
+            font-size: 0.75rem;
+        }
+
+        .footer a {
+            color: #ff6b6b;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            h1 { font-size: 1.8rem; }
+            .input-group input { min-width: 150px; }
+            .input-group button { width: 100%; }
+            .result-grid { grid-template-columns: 1fr; }
+            .result-header { flex-direction: column; align-items: stretch; }
+            .stats { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔥 SPAM OTP</h1>
+    <p class="subtitle">
+        <span>⚠️</span> Untuk edukasi & testing. Jangan gunakan untuk hal ilegal.
+    </p>
+
+    <div class="input-section">
+        <div class="input-group">
+            <input type="text" id="phoneInput" placeholder="Contoh: 6281234567890" value="6281234567890">
+            <button id="sendBtn">🚀 Kirim Spam</button>
+        </div>
+        <div class="info-box">
+            <span class="info-item">📱 Format: <strong>62xxxxxxxx</strong> atau <strong>08xxxxxxxx</strong></span>
+            <span class="info-item">📊 Total API: <strong class="highlight">31</strong> layanan</span>
+            <span class="info-item">⏱️ Estimasi: <strong>~30-60 detik</strong></span>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p>⏳ Mengirim spam ke 31 layanan... Mohon tunggu.</p>
+        <p style="font-size:0.7rem; color:#666;">Proses ini membutuhkan waktu karena ada jeda antar request.</p>
+    </div>
+
+    <!-- Result -->
+    <div id="result">
+        <div class="result-header" id="resultHeader">
+            <div class="main-msg" id="mainMsg">✅ Spam selesai!</div>
+            <div class="stats" id="statsContainer">
+                <span class="stat-item stat-success">✅ <span id="successCount">0</span></span>
+                <span class="stat-item stat-failed">❌ <span id="failedCount">0</span></span>
+                <span class="stat-item stat-error">⚠️ <span id="errorCount">0</span></span>
+                <span class="stat-item">📦 <span id="totalCount">0</span></span>
+            </div>
+        </div>
+        <div class="result-grid" id="resultGrid"></div>
+    </div>
+
+    <div class="footer">
+        Dibuat dengan ❤️ | API dari berbagai layanan Indonesia & Internasional
+    </div>
+</div>
+
+<script>
+    document.getElementById('sendBtn').addEventListener('click', async function() {
+        const phoneInput = document.getElementById('phoneInput');
+        const phone = phoneInput.value.trim();
+        const resultDiv = document.getElementById('result');
+        const resultGrid = document.getElementById('resultGrid');
+        const loader = document.getElementById('loader');
+        const btn = this;
+
+        // Reset
+        resultDiv.classList.remove('show');
+        resultGrid.innerHTML = '';
+        loader.classList.remove('show');
+
+        // Validasi
+        if (!phone) {
+            alert('❌ Masukkan nomor telepon!');
+            return;
+        }
+
+        if (!/^(62|0)[0-9]{9,13}$/.test(phone)) {
+            alert('❌ Format nomor salah!\nGunakan: 62xxxxxxxx atau 08xxxxxxxx');
+            return;
+        }
+
+        // Disable button & show loader
+        btn.disabled = true;
+        btn.textContent = '⏳ Proses...';
+        loader.classList.add('show');
+
+        try {
+            const formData = new FormData();
+            formData.append('phone', phone);
+
+            const response = await fetch('/', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            // Sembunyikan loader
+            loader.classList.remove('show');
+
+            // Tampilkan result
+            resultDiv.classList.add('show');
+
+            // Header
+            const mainMsg = document.getElementById('mainMsg');
+            const successCount = document.getElementById('successCount');
+            const failedCount = document.getElementById('failedCount');
+            const errorCount = document.getElementById('errorCount');
+            const totalCount = document.getElementById('totalCount');
+
+            if (data.status === 'error') {
+                mainMsg.textContent = '❌ ' + data.message;
+                mainMsg.className = 'main-msg error';
+            } else {
+                mainMsg.textContent = data.message || '✅ Spam selesai!';
+                mainMsg.className = 'main-msg success';
+            }
+
+            successCount.textContent = data.success || 0;
+            failedCount.textContent = data.failed || 0;
+            errorCount.textContent = data.errors || 0;
+            totalCount.textContent = data.total || 0;
+
+            // Grid results
+            if (data.results) {
+                const entries = Object.entries(data.results);
+                if (entries.length === 0) {
+                    resultGrid.innerHTML = '<div style="text-align:center;color:#888;padding:20px;">Tidak ada hasil yang tersedia.</div>';
+                } else {
+                    entries.forEach(([name, info]) => {
+                        const card = document.createElement('div');
+                        card.className = 'result-card';
+
+                        let statusClass = '';
+                        let statusText = '';
+                        let borderClass = '';
+
+                        if (info.status === 'SUCCESS') {
+                            statusClass = 'success';
+                            statusText = '✅ Berhasil';
+                            borderClass = 'border-success';
+                        } else if (info.status === 'FAILED') {
+                            statusClass = 'failed';
+                            statusText = '❌ Gagal';
+                            borderClass = 'border-failed';
+                        } else {
+                            statusClass = 'error';
+                            statusText = '⚠️ Error';
+                            borderClass = 'border-error';
+                        }
+
+                        card.className = `result-card ${borderClass}`;
+
+                        let detailHtml = '';
+                        if (info.code) {
+                            detailHtml = `<span class="detail">HTTP ${info.code}</span>`;
+                        }
+                        if (info.error) {
+                            detailHtml = `<span class="detail error-text">${info.error}</span>`;
+                        }
+                        if (info.response && info.response.length > 0) {
+                            detailHtml += `<span class="detail">${info.response.substring(0, 60)}${info.response.length > 60 ? '...' : ''}</span>`;
+                        }
+
+                        card.innerHTML = `
+                            <div class="name">
+                                <span>${name}</span>
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                            </div>
+                            ${detailHtml ? `<div class="detail">${detailHtml}</div>` : ''}
+                        `;
+
+                        resultGrid.appendChild(card);
+                    });
+                }
+            }
+
+        } catch (error) {
+            loader.classList.remove('show');
+            resultDiv.classList.add('show');
+            document.getElementById('mainMsg').textContent = '❌ Error: ' + error.message;
+            document.getElementById('mainMsg').className = 'main-msg error';
+            resultGrid.innerHTML = `<div style="text-align:center;color:#ff6b6b;padding:20px;">Terjadi kesalahan: ${error.message}</div>`;
+        }
+
+        // Enable button
+        btn.disabled = false;
+        btn.textContent = '🚀 Kirim Spam';
+    });
+
+    // Enter key support
+    document.getElementById('phoneInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('sendBtn').click();
+        }
+    });
+</script>
+
+</body>
+</html>
